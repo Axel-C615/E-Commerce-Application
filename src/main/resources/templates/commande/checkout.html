@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="layout/base :: header">
+    <title>Validation de commande - Ma Boutique</title>
+</head>
+<body>
+
+<nav th:replace="layout/base :: navbar"></nav>
+
+<div class="container mt-4">
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-credit-card"></i> Validation de commande</h4>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/commande/creer}" method="post" id="checkoutForm">
+
+                        <h5 class="mb-3"><i class="fas fa-truck"></i> Informations de livraison</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label">Nom complet</label>
+                                <input type="text" class="form-control" name="nom" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Adresse</label>
+                                <input type="text" class="form-control" name="adresse" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Code postal</label>
+                                <input type="text" class="form-control" name="codePostal" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Ville</label>
+                                <input type="text" class="form-control" name="ville" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Téléphone</label>
+                                <input type="tel" class="form-control" name="telephone">
+                            </div>
+                        </div>
+
+                        <h5 class="mb-3"><i class="fas fa-wallet"></i> Mode de paiement</h5>
+                        <div class="mb-4">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="modePaiement"
+                                       id="carteBancaire" value="CARTE_BANCAIRE" checked>
+                                <label class="form-check-label" for="carteBancaire">
+                                    <i class="fab fa-cc-visa fa-lg"></i>
+                                    <i class="fab fa-cc-mastercard fa-lg"></i> Carte bancaire
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="modePaiement"
+                                       id="paypal" value="PAYPAL">
+                                <label class="form-check-label" for="paypal">
+                                    <i class="fab fa-paypal fa-lg text-primary"></i> PayPal
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-check-circle"></i> Confirmer et payer
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Récapitulatif -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-receipt"></i> Récapitulatif</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2" th:each="item : ${items}">
+                        <span th:text="${item.article.nom} + ' x ' + ${item.quantite}"></span>
+                        <span th:text="'€' + ${#numbers.formatDecimal(item.sousTotal, 1, 2)}"></span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between fw-bold fs-5">
+                        <span>Total TTC :</span>
+                        <span class="text-primary" th:text="'€' + ${#numbers.formatDecimal(total, 1, 2)}"></span>
+                    </div>
+                    <div class="alert alert-info mt-3 mb-0 small">
+                        <i class="fas fa-lock"></i> Paiement 100% sécurisé
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div th:replace="layout/base :: scripts"></div>
+</body>
+</html>

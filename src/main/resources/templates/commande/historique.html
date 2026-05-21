@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="layout/base :: header">
+    <title>Mes commandes - Ma Boutique</title>
+</head>
+<body>
+
+<nav th:replace="layout/base :: navbar"></nav>
+
+<div class="container mt-4">
+
+    <h1 class="mb-4">
+        <i class="fas fa-history"></i> Historique des commandes
+    </h1>
+
+    <div th:if="${#lists.isEmpty(commandes)}" class="alert alert-info text-center py-5">
+        <i class="fas fa-receipt fa-4x mb-3"></i>
+        <h4>Aucune commande passée</h4>
+        <p>Vous n'avez encore effectué aucune commande.</p>
+        <a th:href="@{/articles}" class="btn btn-primary">Commander maintenant</a>
+    </div>
+
+    <div th:unless="${#lists.isEmpty(commandes)}">
+        <div class="accordion" id="accordionCommandes">
+            <div class="accordion-item" th:each="commande, iterStat : ${commandes}">
+                <h2 class="accordion-header" th:id="'heading' + ${iterStat.index}">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            th:data-bs-target="'#collapse' + ${iterStat.index}"
+                            th:aria-controls="'collapse' + ${iterStat.index}">
+                        <div class="d-flex justify-content-between w-100 me-3 flex-wrap gap-2">
+                            <span>
+                                <strong>Commande n°</strong>
+                                <span th:text="${commande.numeroCommande}"></span>
+                            </span>
+                            <span th:text="${#temporals.format(commande.dateCommande, 'dd/MM/yyyy HH:mm')}"></span>
+                            <span class="badge"
+                                  th:classappend="${commande.statut == 'PAYEE'} ? 'bg-success' : (${commande.statut == 'EN_ATTENTE'} ? 'bg-warning text-dark' : 'bg-danger')"
+                                  th:text="${commande.statut}"></span>
+                            <span class="fw-bold text-primary"
+                                  th:text="'€' + ${#numbers.formatDecimal(commande.montantTotal, 1, 2)}"></span>
+                        </div>
+                    </button>
+                </h2>
+                <div th:id="'collapse' + ${iterStat.index}"
+                     class="accordion-collapse collapse"
+                     th:classappend="${iterStat.index == 0} ? 'show' : ''"
+                     th:aria-labelledby="'heading' + ${iterStat.index}"
+                     data-bs-parent="#accordionCommandes">
+                    <div class="accordion-body">
+                        <h6>Détails de la commande :</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Article</th>
+                                        <th>Quantité</th>
+                                        <th>Prix unitaire</th>
+                                        <th>Sous-total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="ligne : ${commande.lignesCommande}">
+                                        <td th:text="${ligne.article.nom}"></td>
+                                        <td th:text="${ligne.quantite}"></td>
+                                        <td th:text="'€' + ${#numbers.formatDecimal(ligne.prixUnitaire, 1, 2)}"></td>
+                                        <td th:text="'€' + ${#numbers.formatDecimal(ligne.sousTotal, 1, 2)}"></td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="fw-bold">
+                                        <td colspan="3" class="text-end">Total :</td>
+                                        <td th:text="'€' + ${#numbers.formatDecimal(commande.montantTotal, 1, 2)}"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <p class="mb-0 text-muted small">
+                            Mode de paiement : <span th:text="${commande.modePaiement}"></span><br>
+                            Transaction ID : <span th:text="${commande.transactionId ?: 'N/A'}"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div th:replace="layout/base :: scripts"></div>
+</body>
+</html>

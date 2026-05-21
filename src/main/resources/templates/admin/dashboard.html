@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/base :: header">
+    <title>Dashboard - Administration</title>
+</head>
+<body>
+    <div th:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-tachometer-alt"></i> Dashboard Admin</h1>
+            <span class="badge bg-danger fs-6">ADMIN</span>
+        </div>
+        
+        <!-- Statistiques -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title">Total commandes</h6>
+                                <h2 class="mb-0" th:text="${stats.totalCommandes}">0</h2>
+                            </div>
+                            <i class="fas fa-shopping-cart fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-dark shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title">En attente</h6>
+                                <h2 class="mb-0" th:text="${stats.commandesEnAttente}">0</h2>
+                            </div>
+                            <i class="fas fa-clock fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title">Payées</h6>
+                                <h2 class="mb-0" th:text="${stats.commandesPayees}">0</h2>
+                            </div>
+                            <i class="fas fa-check-circle fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title">Chiffre d'affaires</h6>
+                                <h3 class="mb-0" th:text="'€' + ${stats.chiffreAffaires}">0</h3>
+                            </div>
+                            <i class="fas fa-euro-sign fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Commandes récentes -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="fas fa-list"></i> Commandes récentes</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>N° commande</th>
+                                <th>Client</th>
+                                <th>Montant</th>
+                                <th>Date</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="cmd : ${commandesRecentes}">
+                                <td th:text="${cmd.numeroCommande}">CMD-xxx</td>
+                                <td th:text="${cmd.utilisateur.email}">client@email.com</td>
+                                <td th:text="'€' + ${cmd.montantTotal}">0</td>
+                                <td th:text="${#temporals.format(cmd.dateCommande, 'dd/MM/yyyy HH:mm')}">date</td>
+                                <td>
+                                    <span class="badge" 
+                                          th:class="${cmd.statut} == 'PAYEE' ? 'bg-success' : (${cmd.statut} == 'EN_ATTENTE' ? 'bg-warning' : 'bg-danger')"
+                                          th:text="${cmd.statut}">STATUT</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/admin/commande/{id}(id=${cmd.id})}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Liens rapides -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <a th:href="@{/admin/commandes}" class="btn btn-primary w-100 py-3">
+                    <i class="fas fa-list-alt fa-2x d-block mb-2"></i>
+                    Voir toutes les commandes
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a th:href="@{/admin/articles}" class="btn btn-success w-100 py-3">
+                    <i class="fas fa-boxes fa-2x d-block mb-2"></i>
+                    Gérer les articles
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

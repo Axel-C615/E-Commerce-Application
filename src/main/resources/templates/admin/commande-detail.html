@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout/base :: header">
+    <title>Détail commande - Administration</title>
+</head>
+<body>
+    <div th:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1><i class="fas fa-receipt"></i> Détail commande</h1>
+            <a th:href="@{/admin/commandes}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Retour
+            </a>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Informations commande</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>N° commande :</strong> <span th:text="${commande.numeroCommande}"></span></p>
+                        <p><strong>Date :</strong> <span th:text="${#temporals.format(commande.dateCommande, 'dd/MM/yyyy HH:mm')}"></span></p>
+                        <p><strong>Montant total :</strong> <span class="fw-bold fs-5" th:text="'€' + ${commande.montantTotal}"></span></p>
+                        <p><strong>Mode paiement :</strong> <span th:text="${commande.modePaiement}"></span></p>
+                        <p><strong>Transaction ID :</strong> <span th:text="${commande.transactionId ?: 'N/A'}"></span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Informations client</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Nom :</strong> <span th:text="${commande.utilisateur.prenom} + ' ' + ${commande.utilisateur.nom}"></span></p>
+                        <p><strong>Email :</strong> <span th:text="${commande.utilisateur.email}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="fas fa-box"></i> Articles commandés</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Article</th>
+                                <th>Prix unitaire</th>
+                                <th>Quantité</th>
+                                <th>Sous-total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="ligne : ${commande.lignesCommande}">
+                                <td th:text="${ligne.article.nom}">Nom article</td>
+                                <td th:text="'€' + ${ligne.prixUnitaire}">0</td>
+                                <td th:text="${ligne.quantite}">0</td>
+                                <td class="fw-bold" th:text="'€' + ${ligne.sousTotal}">0</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-active">
+                                <td colspan="3" class="text-end fw-bold">Total :</td>
+                                <td class="fw-bold text-primary" th:text="'€' + ${commande.montantTotal}">0</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

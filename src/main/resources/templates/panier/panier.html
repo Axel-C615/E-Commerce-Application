@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="layout/base :: header">
+    <title>Mon panier - Ma Boutique</title>
+</head>
+<body>
+
+<nav th:replace="layout/base :: navbar"></nav>
+
+<div class="container mt-4">
+
+    <h1 class="mb-4">
+        <i class="fas fa-shopping-cart"></i> Mon panier
+        <span class="badge bg-secondary fs-6" th:text="${nombreArticles} + ' article(s)'"></span>
+    </h1>
+
+    <!-- Panier vide -->
+    <div th:if="${#lists.isEmpty(items)}" class="alert alert-info text-center py-5">
+        <i class="fas fa-shopping-cart fa-4x mb-3"></i>
+        <h4>Votre panier est vide</h4>
+        <p>Découvrez nos produits et commencez vos achats !</p>
+        <a th:href="@{/articles}" class="btn btn-primary mt-3">
+            <i class="fas fa-store"></i> Découvrir nos articles
+        </a>
+    </div>
+
+    <!-- Panier avec articles -->
+    <div th:unless="${#lists.isEmpty(items)}">
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Article</th>
+                        <th>Prix unitaire</th>
+                        <th>Quantité</th>
+                        <th>Sous-total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${items}">
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <img th:if="${item.article.imageUrl}"
+                                     th:src="${item.article.imageUrl}"
+                                     style="width:50px; height:50px; object-fit:cover; border-radius:4px;">
+                                <div>
+                                    <strong th:text="${item.article.nom}"></strong><br>
+                                    <small class="text-muted" th:text="${item.article.categorie}"></small>
+                                </div>
+                            </div>
+                        </td>
+                        <td th:text="'€' + ${#numbers.formatDecimal(item.article.prix, 1, 2)}"></td>
+                        <td>
+                            <form method="post" th:action="@{/panier/modifier/{id}(id=${item.article.id})}"
+                                  class="d-flex gap-2 align-items-center">
+                                <input type="number" name="quantite" th:value="${item.quantite}"
+                                       min="1" th:max="${item.article.stock}"
+                                       class="form-control" style="width:80px;">
+                                <button type="submit" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </form>
+                        </td>
+                        <td class="fw-bold" th:text="'€' + ${#numbers.formatDecimal(item.sousTotal, 1, 2)}"></td>
+                        <td>
+                            <a th:href="@{/panier/supprimer/{id}(id=${item.article.id})}"
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('Supprimer cet article du panier ?')">
+                                <i class="fas fa-trash-alt"></i> Supprimer
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot class="table-active">
+                    <tr>
+                        <td colspan="3" class="text-end fw-bold fs-5">Total TTC :</td>
+                        <td colspan="2" class="fw-bold fs-4 text-primary"
+                            th:text="'€' + ${#numbers.formatDecimal(total, 1, 2)}"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-between flex-wrap gap-3 mt-4">
+            <a th:href="@{/articles}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Continuer mes achats
+            </a>
+            <div class="d-flex gap-2">
+                <a th:href="@{/panier/vider}" class="btn btn-danger"
+                   onclick="return confirm('Vider complètement votre panier ?')">
+                    <i class="fas fa-trash-alt"></i> Vider le panier
+                </a>
+                <a th:href="@{/commande/checkout}" class="btn btn-success btn-lg">
+                    <i class="fas fa-check-circle"></i> Valider la commande
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div th:replace="layout/base :: scripts"></div>
+</body>
+</html>

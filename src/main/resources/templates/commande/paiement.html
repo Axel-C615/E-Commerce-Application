@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="layout/base :: header">
+    <title>Paiement - Ma Boutique</title>
+</head>
+<body>
+
+<nav th:replace="layout/base :: navbar"></nav>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-credit-card"></i> Paiement</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info mb-4">
+                        <strong>Commande n° :</strong>
+                        <span th:text="${commande.numeroCommande}"></span><br>
+                        <strong>Montant à payer :</strong>
+                        <span class="fw-bold fs-5"
+                              th:text="'€' + ${#numbers.formatDecimal(montantTotal, 1, 2)}"></span>
+                    </div>
+
+                    <!-- Formulaire Carte Bancaire -->
+                    <div th:if="${modePaiement == 'CARTE_BANCAIRE'}">
+                        <form th:action="@{/commande/payer/{id}(id=${commande.numeroCommande})}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">Numéro de carte</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fab fa-cc-visa"></i></span>
+                                    <input type="text" name="cardNumber" class="form-control"
+                                           placeholder="1234 5678 9012 3456" maxlength="19" required>
+                                </div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Date d'expiration</label>
+                                    <input type="text" name="cardExpiry" class="form-control"
+                                           placeholder="MM/YY" maxlength="5" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">CVV</label>
+                                    <input type="password" name="cardCvv" class="form-control"
+                                           placeholder="123" maxlength="4" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-lg w-100">
+                                <i class="fas fa-lock"></i> Payer
+                                <span th:text="'€' + ${#numbers.formatDecimal(montantTotal, 1, 2)}"></span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Formulaire PayPal -->
+                    <div th:if="${modePaiement == 'PAYPAL'}">
+                        <form th:action="@{/commande/payer/{id}(id=${commande.numeroCommande})}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">Email PayPal</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fab fa-paypal"></i></span>
+                                    <input type="email" name="paypalEmail" class="form-control"
+                                           placeholder="votre@email.com" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fab fa-paypal"></i> Payer avec PayPal
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="layout/base :: scripts"></div>
+<script>
+    document.querySelector('input[name="cardNumber"]')?.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+        e.target.value = value.slice(0, 19);
+    });
+
+    document.querySelector('input[name="cardExpiry"]')?.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.slice(0, 2) + '/' + value.slice(2, 4);
+        }
+        e.target.value = value.slice(0, 5);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="layout/base :: header">
+    <title>Détail article - Ma Boutique</title>
+</head>
+<body>
+
+<nav th:replace="layout/base :: navbar"></nav>
+
+<div class="container mt-4">
+
+    <!-- Fil d'Ariane -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/articles}">Articles</a></li>
+            <li class="breadcrumb-item">
+                <a th:href="@{/articles/categorie/{cat}(cat=${article.categorie})}"
+                   th:text="${article.categorie}"></a>
+            </li>
+            <li class="breadcrumb-item active" th:text="${article.nom}"></li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Colonne image -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body text-center p-4">
+                    <img th:if="${article.imageUrl}"
+                         th:src="${article.imageUrl}"
+                         th:alt="${article.nom}"
+                         class="img-fluid"
+                         style="max-height: 400px; object-fit: contain;"
+                         onerror="this.src='/images/default-product.jpg'">
+                    <div th:unless="${article.imageUrl}" class="py-5">
+                        <i class="fas fa-image fa-5x text-muted"></i>
+                        <p class="text-muted mt-3">Aucune image disponible</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Colonne informations -->
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h1 class="card-title h2" th:text="${article.nom}">Nom article</h1>
+
+                    <div class="mb-3">
+                        <span class="badge bg-secondary" th:text="${article.categorie}">Catégorie</span>
+                        <span th:if="${article.stock > 0}" class="badge bg-success ms-2">
+                            <i class="fas fa-check-circle"></i> En stock (<span th:text="${article.stock}"></span>)
+                        </span>
+                        <span th:unless="${article.stock > 0}" class="badge bg-danger ms-2">
+                            <i class="fas fa-times-circle"></i> Rupture de stock
+                        </span>
+                    </div>
+
+                    <div class="display-4 text-primary mb-3"
+                         th:text="'€' + ${#numbers.formatDecimal(article.prix, 1, 2)}">Prix</div>
+
+                    <div class="card bg-light mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-align-left"></i> Description</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text" th:text="${article.description}">Description détaillée</p>
+                        </div>
+                    </div>
+
+                    <!-- Formulaire d'ajout au panier -->
+                    <form th:if="${article.stock > 0}" method="post"
+                          th:action="@{/panier/ajouter/{id}(id=${article.id})}"
+                          class="row g-3 align-items-end">
+                        <div class="col-auto">
+                            <label class="form-label fw-bold">Quantité :</label>
+                            <input type="number" name="quantite" value="1" min="1"
+                                   th:max="${article.stock}"
+                                   class="form-control form-control-lg"
+                                   style="width: 120px;">
+                        </div>
+                        <div class="col">
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-shopping-cart"></i> Ajouter au panier
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-3" th:if="${article.stock > 0}">
+                        <a th:href="@{/panier}" class="btn btn-outline-success w-100">
+                            <i class="fas fa-credit-card"></i> Commander directement
+                        </a>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex gap-2">
+                        <a th:href="@{/articles}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Retour aux articles
+                        </a>
+                        <button class="btn btn-outline-info" onclick="shareProduct()">
+                            <i class="fas fa-share-alt"></i> Partager
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div th:replace="layout/base :: scripts"></div>
+<script>
+    function shareProduct() {
+        if (navigator.share) {
+            navigator.share({
+                title: document.querySelector('h1').innerText,
+                text: 'Découvrez ce produit sur Ma Boutique !',
+                url: window.location.href
+            });
+        } else {
+            alert('Copiez le lien pour partager : ' + window.location.href);
+        }
+    }
+</script>
+</body>
+</html>

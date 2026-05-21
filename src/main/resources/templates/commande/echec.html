@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="layout/base :: header">
+    <title>Paiement échoué - Ma Boutique</title>
+</head>
+<body>
+
+<nav th:replace="layout/base :: navbar"></nav>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card shadow-sm border-danger">
+                <div class="card-body p-5">
+                    <div class="mb-4">
+                        <i class="fas fa-times-circle text-danger" style="font-size: 80px;"></i>
+                    </div>
+                    <h1 class="text-danger mb-3">Paiement échoué</h1>
+                    <p class="lead">Une erreur est survenue lors du traitement de votre paiement.</p>
+
+                    <div class="alert alert-danger mt-4">
+                        <strong>Erreur :</strong> <span th:text="${erreur}"></span>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <p>Aucun montant n'a été débité sur votre compte.</p>
+                        <p class="mb-0">Vous pouvez réessayer avec un autre mode de paiement.</p>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-center gap-3 flex-wrap">
+                        <a th:href="@{/panier}" class="btn btn-warning">
+                            <i class="fas fa-edit"></i> Modifier le paiement
+                        </a>
+                        <a th:href="@{/}" class="btn btn-secondary">
+                            <i class="fas fa-home"></i> Retour à l'accueil
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="layout/base :: scripts"></div>
+</body>
+</html>
